@@ -1,0 +1,155 @@
+use SQLAssessment1
+/* Create Customer table with id as Primary Key */
+Create table Customer (
+Id Int Primary key,
+FirstName nvarchar(40),
+LastName nvarchar(40),
+City nvarchar(40),
+Country nvarchar(40),
+Phone nvarchar(20),
+);
+create index IndexCustomerName on Customer(FirstName);
+
+
+
+/* Create Order table with id as Primary Key CustomerId as foreign Key*/
+Create table [Order] (
+Id Int Primary key,
+OrderDate datetime,
+OrderNumber nvarchar(10),
+CustomerId int foreign key references Customer(Id),
+TotalAmmount decimal(12,2)
+);
+/* Create idexes for Order table*/
+create index IndexOrderCustomerId on [Order](CustomerId) ;
+create index IndexOrderOrderDate on [Order](OrderDate);
+
+
+
+
+/* Create Product table with id as Primary Key*/
+Create table Product(
+Id Int Primary key,
+ProductName nvarchar(50),
+UnitPrice decimal(12,2),
+Package nvarchar(30),
+IsDiscontinued bit );
+/* Create idexes for Product table*/
+create index IndexProductSupplierId on [Product](Id) ;
+create index IndexProductName on [Product](ProductName) ;
+
+
+
+
+/* Create OrderItem table with id as Primary Key OrderId and Product as foreign Key*/
+Create table OrderItem (
+Id Int Primary key,
+OrderId int foreign key references [Order](Id),
+ProductId int foreign key references Product(Id),
+UnitPrice decimal(12,2),
+Quntity int);
+/* Create idexes for OrderItem table*/
+create index IndexOrderItemOrderId on [OrderItem](OrderId) ;
+create index IndexOrderItemProductId on [OrderItem](ProductId) ;
+
+insert into customer(id, firstname, lastname, city, country, phone)
+					             values (5001 , 'Sae', 'Sagarla', 'Hyderabad', 'India', '+91-9848158236');
+insert into customer(id, firstname, lastname, city, country, phone)
+					             values (5002 , 'kumaar', 'Sagarla', 'Andhrapradesh', 'India', '+91-8659950524');
+insert into customer(id, firstname, lastname, city, country, phone)
+					             values (5003 , 'lord', 'herry', 'Toronto', 'Germany', '+23-140558654');
+insert into customer(id, firstname, lastname, city, country, phone)
+					             values (5004 , 'steav', 'john', 'texas', 'Germany', '+14-62554833');
+insert into customer(id, firstname, lastname, city, country, phone)
+					             values (5005 , 'Adem', 'Joshi', 'Toronto', 'Russia', '+23-140588671');
+insert into customer(id, firstname, lastname, city, country, phone)
+					             values (5006 , 'Sagral', 'Swamy', 'texas', 'Germany', '');
+								 
+
+insert into [order](id, orderdate, ordernumber, customerid, totalammount)
+								 values(2001, 2022-04-05, '40001', 5001, 96752.19);
+insert into [order](id, orderdate, ordernumber, customerid, totalammount)
+								 values(2002, 06/05/2022, '40002', 5002, 96735.16);
+insert into [order](id, orderdate, ordernumber, customerid, totalammount)
+								 values(2003, 07/03/2022, '40003', 5003, 96745.24);
+insert into [order](id, orderdate, ordernumber, customerid, totalammount)
+								 values(2004, 08/02/2022, '40004', 5004, 96773.52);
+								 
+								
+insert into product(id, productname, unitprice, Package, IsDiscontinued)
+								 values(1001, 'Apple tob', 36782.12, 'mobile', 1);
+insert into product(id, productname, unitprice, Package, IsDiscontinued)
+								 values(1002, 'dell Laptop', 37742.52, 'Laptops', 0);
+insert into product(id, productname, unitprice, Package, IsDiscontinued)
+								 values(1003, 'Apple Laptop', 15025.05, 'Laptops', 1);
+insert into product(id, productname, unitprice, Package, IsDiscontinued)
+								 values(1004, ' Samsung', 11000.43, 'mobile', 0);
+
+
+insert into orderitem(id, orderid, productid, unitprice, quntity)
+								 values(4001, 2001, 1001, 36782.12, 2); 
+insert into orderitem(id, orderid, productid, unitprice, quntity)
+								 values(4002, 2002, 1002, 37742.52, 1); 
+insert into orderitem(id, orderid, productid, unitprice, quntity)
+								 values(4003, 2003, 1003, 15025.05, 2); 
+insert into orderitem(id, orderid, productid, unitprice, quntity)
+								 values(4004, 2004, 1004, 11000.43, 3);
+
+select * from customer;
+select * from [order];
+select * from product;
+select * from orderitem;
+
+
+/*In Customer table FirstName Attribute should not accept null value*/
+drop index IndexCustomerName on Customer;
+ALTER TABLE Customer alter COLUMN FirstName nvarchar(40) NOT NULL;
+
+/*In Order table OrderDate should not accept null value*/
+drop index IndexOrderOrderDate on [Order];
+ALTER TABLE [Order] alter COLUMN OrderDate datetime NOT NULL;
+
+/*query to diplay country whose name start with A or I*/
+SELECT firstname "Name",Country "country"
+FROM customer
+WHERE firstname LIKE 'I%'
+OR firstname LIKE 'A%'
+ORDER BY firstname ;
+
+/*query to display whose name of coustomer whose third charecter is e*/
+SELECT *
+FROM Customer
+WHERE firstname LIKE '__e%';
+
+/*Coustemer table whose country is Germany*/
+SELECT *
+FROM Customer
+WHERE country LIKE 'germany';
+
+
+/* Display the customer details who has Fax number*/
+select * from Customer where Fax is not null;
+
+
+/*full name of Customer*/
+SELECT firstname+ +lastname FROM Customer;
+
+/*whose name holds second letter as u*/
+SELECT * FROM Customer WHERE firstname LIKE '_u%';
+
+/*unit price is greater then 15000 and less then 40000*/
+SELECT * FROM OrderItem WHERE (((UnitPrice) < 40000) AND ((UnitPrice) > 15000))
+ORDER BY UnitPrice DESC;
+
+/*order the date*/
+SELECT orderdate  FROM [order] orderdate ORDER BY OrderDate ASC;
+
+/* Print the orders shipped by ship name 'La corne d'abondance' between 2 dates(Choose dates of your choice) */
+select * from Orders where shipName like '%la' in(select * from Orders where dates between 01-01-2022 and 01-03-2022);
+
+/*Print the products supplied by 'Poly bags'*/
+select * from Product where Package='Poly bags';
+
+
+/*16. print the average quantity ordered for every product */
+select avg(quntity) from OrderItem;
